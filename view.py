@@ -3,28 +3,38 @@ from flask.json import JSONEncoder as BaseEncoder, jsonify
 from flask._compat import text_type
 import config
 import json
+import codecs
+import sys
 from tqdm import tqdm
 from exts import db
 from models import Question, User
-from speaklater import _LazyString
+# from speaklater import _LazyString
 from decorators import login_required
 
 
-class JSONEncoder(BaseEncoder):
-    def default(self, o):
-        if isinstance(o, _LazyString):
-            return text_type(o)
-        return BaseEncoder.default(self, o)
+# class JSONEncoder(BaseEncoder):
+#     def default(self, o):
+#         if isinstance(o, _LazyString):
+#             return text_type(o)
+#         return BaseEncoder.default(self, o)
 
 
 app = Flask(__name__)
 app.config.from_object(config)
-app.json_encoder = JSONEncoder
+# app.json_encoder = JSONEncoder
 db.init_app(app)
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+result = None
+
+def decode_result(result):
+    for r in result:
+        for k, v in r.items():
+            if isinstance(v, str):
+                v = v.decode('UTF-8', 'strict')
+    return result
         
 
 @app.route('/', methods=['GET', 'POST'])
-@login_required
 def index():
     if request.method == 'GET':
         return render_template('index.html')
@@ -33,10 +43,15 @@ def index():
         if keyword is not None:
             questions = Question.query.filter(Question.q_text.like(
             '%' + keyword + '%'))
-            session['questions'] = questions
+            questions = [q.serialize for q in questions.all()]
+            # session['questions'] = questions
+            global result
+            result = None
+            result = questions
             return redirect(url_for('list'))
         else:
             return redirect(url_for('index'))
+
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -59,9 +74,15 @@ def login():
 
 @app.route('/list/', methods=['GET', 'POST'])
 def list():
-    questions = session['questions']
-    questions = jsonify(questions=[q.serialize for q in questions.all()])
-    return render_template('list.html', question=questions[0].q_text)
+    if request.method == 'GET':
+        global result
+        return render_template('list.html', questions=result)
+    else:
+        keyword = request.form.get('keyword')
+        questions = Question.query.filter(Question.q_text.like(
+            '%' + keyword + '%'))
+        questions = [q.serialize for q in questions.all()]
+        return render_template('list.html', questions=questions)
 
 
 @app.route('/regist/', methods=['GET', 'POST'])
@@ -87,6 +108,11 @@ def regist():
                 db.session.commit()
                 flash('注册成功!')
                 return redirect(url_for('login'))
+
+@app.route('/history/', methods=['GET', 'POST'])
+@login_required
+def history():
+    pass
 
 
 
