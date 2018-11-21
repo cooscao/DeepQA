@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}DeepQA-首页{% endblock %}
+
+{% block page_content %}
+<div>
+<p style="color:dimgrey; font-size: 18px;">DeepQA为你找到关于{{keyword}}的记录共{{num}}条</p>
+<br>
+</div>
+{% include '_questions.html' %}
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.list') }}
+</div>
+{% endif %}
+{% endblock %}
+
