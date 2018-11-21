@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}列表{% endblock %}
+
+{% block head %}
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/login_regist.css')}}">
+{% endblock %}
+
+{% block main %}
+{% for question in questions %}
+<h1>{{question['q_text']}}</h1>
+<p>{{question['p_text']}}</p>
+<h2>{{question['alternatives']}}</h2>
+<br>
+{% endfor %}
+{% endblock %}
+
