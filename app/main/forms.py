@@ -6,3 +6,7 @@ from wtforms.validators import DataRequired
 class SearchForm(FlaskForm):
     keyword = StringField('请输入关键字', validators=[DataRequired()])
     submit = SubmitField('搜索')
+
+
+class PredictForm(FlaskForm):
+    submit = SubmitField('回答')

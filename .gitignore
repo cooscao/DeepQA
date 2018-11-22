@@ -1,3 +1,5 @@
 __pycache__/
 .ipynb_checkpoints/
-app/net/
+app/net/embedding.npy
+app/net/model.pt
+app/net/word2id.obj

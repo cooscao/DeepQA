@@ -1,6 +1,6 @@
 <ul class="questions">
         {% for question in questions %}
-        <a style="font-size: 25px;" href="#">{{question.q_text}}?</a>
+        <a style="font-size: 25px;" href="{{url_for('main.detail', id=question.id)}}">{{question.q_text}}?</a>
         <p>{{question.p_text}}</p>
         <hr>
         {% endfor %}

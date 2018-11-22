@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}DeepQA-{{question.q_text}}{% endblock %}
+
+{% block page_content %}
+<h2>问题：{{question.q_text}}?</h2>
+<br>
+<h3>文章：{{question.p_text}}</h3>
+<br>
+<h3>备选答案：{{question.alternatives}}</h3>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}
